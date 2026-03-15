@@ -8,7 +8,6 @@ async function bootstrap() {
   
   app.setGlobalPrefix('api/v1');
 
-  // Swagger
   const config = new DocumentBuilder()
     .setTitle('E-Commerce API')
     .setDescription('E-Commerce Platform API documentation')
@@ -21,4 +20,5 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3001);
 }
-bootstrap();
+
+void bootstrap();

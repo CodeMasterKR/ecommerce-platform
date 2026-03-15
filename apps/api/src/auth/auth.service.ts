@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
+import { User } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
@@ -17,7 +18,7 @@ export class AuthService {
     }
 
     const passwordHash = await bcrypt.hash(password, 10);
-    const user = await this.usersService.create({ email, passwordHash });
+    const user: User = await this.usersService.create({ email, passwordHash });
 
     const token = this.jwtService.sign({ sub: user.id, email: user.email });
 
@@ -25,7 +26,7 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
-    const user = await this.usersService.findByEmail(email);
+    const user: User | null = await this.usersService.findByEmail(email);
     if (!user || !user.passwordHash) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -40,7 +41,7 @@ export class AuthService {
     return { token, user: { id: user.id, email: user.email, role: user.role } };
   }
 
-  async validateUser(id: string) {
+  async validateUser(id: string): Promise<User | null> {
     return this.usersService.findById(id);
   }
 }
